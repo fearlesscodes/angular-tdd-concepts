@@ -1,16 +1,25 @@
 import { TestBed, async } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
+import {CustomerService} from './customer.service';
+import {of} from 'rxjs';
+
 
 describe('AppComponent', () => {
+  let customerService: CustomerService;
+  let stateResult;
+
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [
-        RouterTestingModule
+        RouterTestingModule,
       ],
       declarations: [
         AppComponent
       ],
+      providers: [
+        CustomerService
+      ]
     }).compileComponents();
   }));
 
@@ -31,5 +40,25 @@ describe('AppComponent', () => {
     fixture.detectChanges();
     const compiled = fixture.debugElement.nativeElement;
     expect(compiled.querySelector('.content span').textContent).toContain('test app is running!');
+  });
+
+  it('show title when function of customer service', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+
+    const app = fixture.debugElement.componentInstance;
+
+    customerService = fixture.debugElement.injector.get(CustomerService);
+
+    stateResult = spyOn(customerService, 'getCustomer').and.returnValue(of(false));
+    fixture.detectChanges();
+    expect(app.state).toBe(false);
+  });
+
+  it('check if setCustomer has been passed the correct variable', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    customerService = fixture.debugElement.injector.get(CustomerService);
+    spyOn(customerService, 'setCustomer');
+    customerService.setCustomer('hallo');
+    expect(customerService.setCustomer).toHaveBeenCalledWith('hallo');
   });
 });
